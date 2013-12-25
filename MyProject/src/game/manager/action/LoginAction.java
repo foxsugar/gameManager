@@ -1,4 +1,4 @@
-package game.manger.action;
+package game.manager.action;
 
 public class LoginAction {
 
