@@ -38,6 +38,45 @@
 	<mvc:annotation-driven />
 	<aop:aspectj-autoproxy />
 
+
+
+	<!-- 定义数据源Bean，使用C3P0数据源实现 -->
+	<!-- 设置连接数据库的驱动、URL、用户名、密码
+		连接池最大连接数、最小连接数、初始连接数等参数 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close" p:driverClass="com.mysql.jdbc.Driver"
+		p:jdbcUrl="jdbc:mysql://localhost:3306/bbs" p:user="root" p:password=""
+		p:maxPoolSize="40" p:minPoolSize="1" p:initialPoolSize="1"
+		p:maxIdleTime="20" />
+
+
+	<!-- 定义Hibernate的SessionFactory -->
+	<!-- 依赖注入数据源，注入正是上面定义的dataSource -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
+		p:dataSource-ref="dataSource">
+		<!-- 注解 -->
+		<property name="packagesToScan">
+			<list>
+				<!-- 以下用来列出实体类 -->
+				<value>com.bbs.entity</value>
+			</list>
+		</property>
+		<!-- 定义Hibernate的SessionFactory的属性 -->
+		<property name="hibernateProperties">
+			<!-- 指定数据库方言、是否自动建表是否生成SQL语句等 	-->
+			<value>
+				hibernate.dialect=org.hibernate.dialect.MySQLInnoDBDialect
+				hibernate.hbm2ddl.auto=update
+				hibernate.show_sql=true
+				hibernate.format_sql=true
+				#开启二级缓存
+				hibernate.cache.use_second_level_cache=true
+				#设置二级缓存的提供者
+				hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
+			</value>
+		</property>
+	</bean>
 	
 	
  
