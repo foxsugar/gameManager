@@ -1,22 +1,30 @@
 package game.manager.action;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import game.manager.bean.User;
+import game.manager.dao.UserDao;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class LoginAction {
 	
-	@RequestMapping(value="/MyProject/login")
-	public String login(HttpSession session,HttpServletResponse response,HttpServletRequest request){
+	@Autowired
+	UserDao userDao;
+
+	@RequestMapping(value="login")
+	public String login(){
+		
+		User user = new User();
+		user.setUserName("hello");
+		user.setPassWord("12");
+		userDao.save(user);
 		
 		
 		System.out.println("hello world");
-		return "/login";
+		return "jsp/test";
 		
 	}
 }

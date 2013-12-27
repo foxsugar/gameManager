@@ -15,20 +15,23 @@
 		http://www.springframework.org/schema/tx
 		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 	">
-	<!-- 自动扫描机制 
-	<context:component-scan base-package="com.crystalcg.gamedev.gameLog.*">
-	</context:component-scan>
-	-->
+	<!-- 自动扫描机制 -->
+	<context:component-scan base-package="game.*"/>
+	
 	<mvc:annotation-driven />
 	
-	   <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />   
+	
+   <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
         <property name="prefix" value="/" />
         <property name="suffix" value=".jsp" />
     </bean>
-
     
+    	<!--  使用默认的Servlet来响应静态文件。 -->
+ 	<mvc:default-servlet-handler/>
 	
+	<aop:aspectj-autoproxy />
 	
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
@@ -45,19 +48,81 @@
 			</list>
 		</property>
 	</bean>
-	<mvc:annotation-driven />
-	<aop:aspectj-autoproxy />
+
+<!-- 定义数据源Bean，使用C3P0数据源实现 -->
+	<!-- 设置连接数据库的驱动、URL、用户名、密码
+		连接池最大连接数、最小连接数、初始连接数等参数 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close" p:driverClass="com.mysql.jdbc.Driver"
+		p:jdbcUrl="jdbc:mysql://172.17.0.117/test" p:user="developer01" p:password="webgame01"
+		p:maxPoolSize="40" p:minPoolSize="1" p:initialPoolSize="1"
+		p:maxIdleTime="20" />
 
 
+	<!-- 定义Hibernate的SessionFactory -->
+	<!-- 依赖注入数据源，注入正是上面定义的dataSource -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
+		p:dataSource-ref="dataSource">
+		<!-- 注解 -->
+		<property name="packagesToScan">
+			<list>
+				<!-- 以下用来列出实体类 -->
+				<value>game.manager.bean</value>
+			</list>
+		</property>
+		<!-- 定义Hibernate的SessionFactory的属性 -->
+		<property name="hibernateProperties">
+			<props> 
+				<!-- 指定数据库方言、是否自动建表是否生成SQL语句等 	-->
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+               	<!-- 解决no session found   值不能使thread-->
+                <prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>
+          </props>
+		</property>
+	</bean>
 
-
 	
-	
-	
-	
-	
-	
-	
+	     <!-- 事务管理器 -->  
+    <bean id="transactionManager"   
+    class="org.springframework.orm.hibernate4.HibernateTransactionManager">  
+        <property name="sessionFactory" ref="sessionFactory"></property>  
+    </bean>  
+    <!-- 配置那些类的方法进行事务管理,需要aopalliance-1.0.jar和aspectjweaver.jar，当前com.neusoft.leehom.service包中的子包，  
+                       类中所有方法需要，还需要参考tx:advice的设置 -->  
+    <!-- 需要引入tx的命名空间 -->  
+    <!-- 这是事务通知操作，使用的事务管理器引用自 transactionManager -->  
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">  
+        <tx:attributes>  
+         <!-- 指定哪些方法需要加入事务，这里懒惰一下全部加入，可以使用通配符来只加入需要的方法 -->  
+            <tx:method name="insert*" propagation="REQUIRED" />  
+            <tx:method name="save*" propagation="REQUIRED" />  
+            <tx:method name="update*" propagation="REQUIRED" />  
+            <tx:method name="delete*" propagation="REQUIRED" />  
+            <tx:method name="get*" propagation="REQUIRED" read-only="true"/>  
+            <tx:method name="query*" propagation="REQUIRED" read-only="true"/>  
+            <tx:method name="*" propagation="REQUIRED" />  
+            
+            
+        </tx:attributes>  
+    </tx:advice> 
+    
+    
+    
+    <aop:config proxy-target-class="true"> 
+<aop:advisor advice-ref="txAdvice" pointcut="execution(* game.manager.dao.*.*(..))" /> 
+</aop:config>
+    
+      <!-- 需要引入aop的命名空间 -->  
+<!--     <aop:config>   -->
+<!--         切入点指明了在执行Service的所有方法时产生事务拦截操作   -->
+<!--         <aop:pointcut id="daoMethods" expression="execution(* com.neusoft.leehom.service.impl.*.*(..))" />       -->
+<!--         定义了将采用何种拦截操作，这里引用到 txAdvice   -->
+<!--         <aop:advisor advice-ref="txAdvice" pointcut-ref="daoMethods" />   -->
+<!--     </aop:config>  -->
 	
 	
 	

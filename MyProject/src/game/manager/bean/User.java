@@ -1,17 +1,25 @@
 package game.manager.bean;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 
+@Entity
 @Table
 public class User {
 	
 	@Id
 	private int id;
 	private String userName;
-	private String passWorld;
+	private String passWord;
 	
+	public String getPassWord() {
+		return passWord;
+	}
+	public void setPassWord(String passWord) {
+		this.passWord = passWord;
+	}
 	public int getId() {
 		return id;
 	}
@@ -23,12 +31,6 @@ public class User {
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-	public String getPassWorld() {
-		return passWorld;
-	}
-	public void setPassWorld(String passWorld) {
-		this.passWorld = passWorld;
 	}
 	
 	
