@@ -106,7 +106,6 @@
             <tx:method name="query*" propagation="REQUIRED" read-only="true"/>  
             <tx:method name="*" propagation="REQUIRED" />  
             
-            
         </tx:attributes>  
     </tx:advice> 
     
@@ -116,13 +115,6 @@
 <aop:advisor advice-ref="txAdvice" pointcut="execution(* game.manager.dao.*.*(..))" /> 
 </aop:config>
     
-      <!-- 需要引入aop的命名空间 -->  
-<!--     <aop:config>   -->
-<!--         切入点指明了在执行Service的所有方法时产生事务拦截操作   -->
-<!--         <aop:pointcut id="daoMethods" expression="execution(* com.neusoft.leehom.service.impl.*.*(..))" />       -->
-<!--         定义了将采用何种拦截操作，这里引用到 txAdvice   -->
-<!--         <aop:advisor advice-ref="txAdvice" pointcut-ref="daoMethods" />   -->
-<!--     </aop:config>  -->
 	
 	
 	
