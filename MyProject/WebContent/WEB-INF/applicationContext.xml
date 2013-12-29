@@ -54,9 +54,15 @@
 		连接池最大连接数、最小连接数、初始连接数等参数 -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close" p:driverClass="com.mysql.jdbc.Driver"
-		p:jdbcUrl="jdbc:mysql://172.17.0.117/test" p:user="developer01" p:password="webgame01"
+		p:jdbcUrl="jdbc:mysql://localhost/test" p:user="root" p:password="root"
 		p:maxPoolSize="40" p:minPoolSize="1" p:initialPoolSize="1"
 		p:maxIdleTime="20" />
+
+    <!--<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"-->
+          <!--destroy-method="close" p:driverClass="com.mysql.jdbc.Driver"-->
+          <!--p:jdbcUrl="jdbc:mysql://172.17.0.117/test" p:user="developer01" p:password="webgame01"-->
+          <!--p:maxPoolSize="40" p:minPoolSize="1" p:initialPoolSize="1"-->
+          <!--p:maxIdleTime="20" />-->
 
 
 	<!-- 定义Hibernate的SessionFactory -->
